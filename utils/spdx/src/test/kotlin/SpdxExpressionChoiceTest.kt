@@ -199,6 +199,23 @@ class SpdxExpressionChoiceTest : WordSpec({
 
             result shouldBe "a".toSpdx()
         }
+
+        "apply choice regardless of license order in OR expression" {
+            val expression = "(GPL-2.0-only OR MIT) AND Apache-2.0".toSpdx()
+
+            val choices1 = listOf(
+                SpdxLicenseChoice("GPL-2.0-only OR MIT".toSpdx(), "MIT".toSpdx())
+            )
+            val choices2 = listOf(
+                SpdxLicenseChoice("MIT OR GPL-2.0-only".toSpdx(), "MIT".toSpdx())
+            )
+
+            val result1 = expression.applyChoices(choices1)
+            result1 shouldBe "MIT AND Apache-2.0".toSpdx()
+
+            val result2 = expression.applyChoices(choices2)
+            result2 shouldBe "MIT AND Apache-2.0".toSpdx()
+        }
     }
 
     "isSubExpression()" should {
